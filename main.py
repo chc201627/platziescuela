@@ -1,6 +1,6 @@
+import sys
 
-
-clients  = 'Camilo,Ernesto,Juan'
+clients  = 'Camilo,Ernesto,Juan,'
 
 def create_client(client_name):
     global clients
@@ -54,8 +54,21 @@ def _print_welcome():
     print ('[D]elate client')
     print ('[S]earch clients')
 
-def _get_client_name():
-    return input ('What is the client name?')
+def get_client_name():
+    client_name = None
+
+    while not client_name:
+        client_name = input ('What is the client name?')
+    
+        
+        if client_name == 'exit' or client_name == 'EXIT':
+            client_name = None
+            break
+    
+    if not client_name:
+        sys.exit()
+
+    return client_name
 
 def _print_client_not_list():
     return   print('Client is not in client list')
@@ -69,20 +82,20 @@ if __name__ == "__main__":
 
 
     if command == 'C':
-        client_name = _get_client_name()
+        client_name = get_client_name()
         create_client(client_name)
         list_clients()
     elif command =='D':
-        client_name = _get_client_name()
+        client_name = get_client_name()
         delete_client(client_name)
         list_clients()
     elif command == 'U':
-        client_name = _get_client_name()
+        client_name = get_client_name()
         update_client_name=input('What is the updated client name? ')
         update_client(client_name, update_client_name)
         list_clients()
     elif command =='S':
-        client_name = _get_client_name()
+        client_name = get_client_name()
         found  = search_client(client_name)
 
         if found:
