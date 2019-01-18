@@ -1,21 +1,28 @@
+import csv
 import sys
+import os
 
-clients  = [
-    {
-        'name' : 'Camilo',
-        'company' : 'Google',
-        'email' : 'camilo@google.com',
-        'position' : 'Software engineer',
-    },
-    {
-        'name' : 'Ricardo',
-        'company' : 'Facebook',
-        'email' : 'ricado@facebook.com',
-        'position' : 'Data engineer',
-    }
+CLIENT_TABLE ='.client.csv'
+CLIENT_SCHEMA=['name','company','email','position']
+clients  = []
 
 
-]
+def _initialize_clients_from_storage():
+    with open(CLIENT_TABLE, mode='r') as f:
+        reader = csv.DictReader(f,  fieldnames=CLIENT_SCHEMA)
+
+        for row in reader:
+            clients.append(row)
+    
+
+def _save_clients_to_storage():
+    tmp_table_name = '{}.tmp'.format(CLIENT_TABLE)
+    with open(tmp_table_name, mode='w') as f:
+        writer = csv.DictWriter(f, fieldnames=CLIENT_SCHEMA)
+        writer.writerows(clients)
+
+        os.remove(CLIENT_TABLE)
+    os.rename(tmp_table_name, CLIENT_TABLE)
 
 def create_client(client):
     global clients
@@ -110,9 +117,9 @@ def get_client_name():
 def _print_client_not_list():
     return   print('Client is not in client list')
 
-i
 
 if __name__ == '__main__':
+    _initialize_clients_from_storage()
     _print_welcome()
 
     command = input()
@@ -122,7 +129,7 @@ if __name__ == '__main__':
         client = ingress_client_data()
 
         create_client(client)
-        list_clients()
+        
     elif command == 'L':
         list_clients()
     elif command == 'U':
@@ -130,19 +137,22 @@ if __name__ == '__main__':
         updated_client = ingress_client_data()
 
         update_client(client_id, updated_client)
-        list_clients()
+      
     elif command == 'D':
+        list_clients()
         client_id = int(_get_client_field('id'))
 
         delete_client(client_id)
-        list_clients()
+       
     elif command == 'S':
         client_name = _get_client_field('name')
         found = search_client(client_name)
-        
+       
         if found:
             print('The client is in the client\'s list')
         else:
             print('The client: {} is not in our client\'s list'.format(client_name))
     else:
         print('Invalid command')
+
+    _save_clients_to_storage()
